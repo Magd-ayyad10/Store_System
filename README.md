@@ -126,4 +126,4 @@ Now that your documentation and requirements are ready, you have a solid foundat
 
 **Would you like me to help you add a "Search" endpoint that allows users to find products by name or category?**
 
-```
+```.
