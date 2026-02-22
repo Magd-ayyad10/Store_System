@@ -26,7 +26,7 @@ def create_product(db: Session, product: ProductCreate):
         description=product.description,
         price=product.price,
         stock=product.stock,
-        category_id=product.category_id  # <--- Map it here
+        category_id=product.category_id  
     )
     db.add(db_product)
     db.commit()
@@ -55,7 +55,7 @@ def create_user(db: Session, user: user_schemas.UserCreate):
     db_user = User(
         username=user.username,
         email=user.email,
-        hashed_password=hashed_pwd # Save the HASH, not the plain text!
+        hashed_password=hashed_pwd
     )
     db.add(db_user)
     db.commit()
