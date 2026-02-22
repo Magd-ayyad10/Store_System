@@ -63,6 +63,16 @@ def create_user(db: Session, user: user_schemas.UserCreate):
     return db_user
 
 
+def delete_user(db: Session, user_id: int):
+    user = db.query(User).filter(User.id == user_id).first()
+    if user:
+        db.delete(user)
+        db.commit()
+        return True
+    return False
+
+
+
 def create_category(db: Session, category: category_schemas.CategoryCreate):
     db_category = Category(name=category.name)
     db.add(db_category)
@@ -73,3 +83,5 @@ def create_category(db: Session, category: category_schemas.CategoryCreate):
 
 def get_category(db: Session, category_id: int):
     return db.query(Category).filter(Category.id == category_id).first()
+
+
