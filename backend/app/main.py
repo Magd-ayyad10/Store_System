@@ -12,7 +12,7 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Magd's Store System", 
-    description="API for managing products, users, and categories in the store system.", 
+    description="API for managing products, users, and categories in the store system...", 
     version="1.0.0"
 )
 

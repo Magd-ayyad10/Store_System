@@ -39,7 +39,7 @@ def read_product(
     product_id: int,
     db: Session = Depends(get_db)):
     
-    """Fetch a single product by its ID."""
+    """Fetch a single product by its ID..."""
     db_product = crud.get_product(db, product_id=product_id)
     if not db_product:
         raise HTTPException(status_code=404, detail="Product not found")
