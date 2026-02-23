@@ -16,8 +16,10 @@ class ProductCreate(ProductBase):
 
 class Product(ProductBase):
     id: int 
+    cover_image_url: Optional[str] = None
 
     class Config:
         from_attribute = True
+
 
         

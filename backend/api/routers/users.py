@@ -62,6 +62,7 @@ def like_a_product(user_id: int, product_id: int, db: Session = Depends(get_db))
     result = crud.add_like(db, user_id=user_id, product_id=product_id)
     if result is None:
         raise HTTPException(status_code=404, detail="User or Product not found")
-    return {"message": f"Successfully liked product {product_id}"}
+    return {"message": f"Successfully liked product {product_id}..."}
 
+  
 

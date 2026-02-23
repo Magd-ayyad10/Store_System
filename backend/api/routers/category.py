@@ -16,3 +16,5 @@ def create_category(category: category_schemas.CategoryCreate, db: Session = Dep
 @router.get("/")
 def read_categories(db: Session = Depends(get_db)):
     return crud.get_categories(db)
+
+    

@@ -15,4 +15,6 @@ class User(Base):
 
 
     liked_products = relationship("Product", secondary = "likes", back_populates="liked_by")
+
+    
     
