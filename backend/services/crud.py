@@ -84,4 +84,4 @@ def create_category(db: Session, category: category_schemas.CategoryCreate):
 def get_category(db: Session, category_id: int):
     return db.query(Category).filter(Category.id == category_id).first()
 
-
+    

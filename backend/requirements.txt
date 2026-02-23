@@ -9,3 +9,6 @@ passlib[bcrypt]==1.7.4
 python-multipart==0.0.9
 pyndantic[email]==2.2.1
 argon2-cffi==21.3.0
+email-validator==2.0.0
+supabase==0.0.1
+d

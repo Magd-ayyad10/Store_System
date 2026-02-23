@@ -25,3 +25,5 @@ app.include_router(category.router)
 @app.get("/")
 def root():
     return {"message": "Welcome to the Store API!"}
+
+    
