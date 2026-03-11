@@ -23,3 +23,4 @@ def get_db():
     finally:
         db.close()
 print(f"URL: {DATABASE_URL}")
+

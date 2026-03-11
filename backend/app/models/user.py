@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from core.database import Base
+from app.core.database import Base
 
 
 class User(Base):
@@ -15,4 +15,6 @@ class User(Base):
 
 
     liked_products = relationship("Product", secondary = "likes", back_populates="liked_by")
+
+    
     

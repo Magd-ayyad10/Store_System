@@ -1,29 +1,29 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from core.database import get_db
-from services import crud, auth
-from services.auth import verify_password, create_access_token, get_current_user
+from app.core.database import get_db
+from app.services import crud, auth, user_service, auth_service
+from app.services.auth import verify_password, create_access_token, get_current_user
 from app.models.user import User  
 from app.schemas import user as user_schemas  
+from app.schemas.token import Token
 
 
 router = APIRouter(
-    prefix="/users",
-    tags=["Users & Likes"]
+    prefix="/Register",
+    tags=["Authentication"]
 )
 
 
 @router.post("/", response_model=user_schemas.User)
 def create_user(
     user: user_schemas.UserCreate,
-    db: Session = Depends(get_db),
-    #current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
     ):
     db_user = db.query(User).filter(User.username == user.username).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
-    return crud.create_user(db=db, user=user)
+    return user_service.register_user(db=db, user=user)
 
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -41,27 +41,31 @@ def delete_user(
     
     success = crud.delete_user(db, user_id)
     if not success:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=401, detail="User not found")
     
     return None
 
-@router.post("/login")
+@router.post("/login" , response_model= Token)
 def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == form_data.username).first()
+    user = auth_service.authenticate_user(db, form_data.username, form_data.password)
     if not user or not verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-    
-    access_token = create_access_token(data={"sub": user.username})
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+            )
+    access_token = create_access_token(data={"sub": user.username, "user_id": user.id})
     return {"access_token": access_token, "token_type": "bearer"}
 
-
-@router.post("/{user_id}/like/{product_id}")
-def like_a_product(user_id: int, product_id: int, db: Session = Depends(get_db)):
-    result = crud.add_like(db, user_id=user_id, product_id=product_id)
-    if result is None:
-        raise HTTPException(status_code=404, detail="User or Product not found")
-    return {"message": f"Successfully liked product {product_id}"}
-
-
+  
+@router.post("/", response_model=user_schemas.User, status_code=status.HTTP_201_CREATED)
+def signup(
+    user_data: user_schemas.UserCreate,
+    db: Session = Depends(get_db)
+):
+    existing_user = user_service.get_user_by_email(db, email=user_data.email)
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return user_service.register_new_user(db=db, user_data=user_data)

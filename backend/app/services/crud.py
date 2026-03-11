@@ -20,14 +20,8 @@ def get_products(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Product).offset(skip).limit(limit).all()
 
 
-def create_product(db: Session, product: ProductCreate):
-    db_product = Product(
-        name=product.name,
-        description=product.description,
-        price=product.price,
-        stock=product.stock,
-        category_id=product.category_id  # <--- Map it here
-    )
+def create_product(db: Session, product_data: dict):
+    db_product = Product(**product_data)
     db.add(db_product)
     db.commit()
     db.refresh(db_product)
@@ -35,18 +29,18 @@ def create_product(db: Session, product: ProductCreate):
 
 
 def add_like(db: Session, user_id: int, product_id: int):
-    """link a user to a product (The 'Like')."""
     user = db.query(User).filter(User.id == user_id).first()
     product = db.query(Product).filter(Product.id == product_id).first()
 
-    if not user or not product:
-        return None
-
+    if not user:
+        return {"error": "user_not_found"}
+    if not product:
+        return {"error": "product_not_found"}
 
     if product not in user.liked_products:
         user.liked_products.append(product)
         db.commit()
-    
+
     return product
 
 
@@ -55,7 +49,7 @@ def create_user(db: Session, user: user_schemas.UserCreate):
     db_user = User(
         username=user.username,
         email=user.email,
-        hashed_password=hashed_pwd # Save the HASH, not the plain text!
+        hashed_password=hashed_pwd
     )
     db.add(db_user)
     db.commit()
@@ -81,7 +75,23 @@ def create_category(db: Session, category: category_schemas.CategoryCreate):
     return db_category
 
 
-def get_category(db: Session, category_id: int):
-    return db.query(Category).filter(Category.id == category_id).first()
+def get_categories(db: Session, skip: int = 0, limit: int = 10):
+    return db.query(Category).offset(skip).limit(limit).all()
 
 
+def delete_product(db: Session, product_id: int):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if product:
+        db.delete(product)
+        db.commit()
+        return True
+    return False
+
+
+def delete_category(db: Session, category_id: int):
+    category = db.query(Category).filter(Category.id == category_id).first()
+    if category:
+        db.delete(category)
+        db.commit()
+        return True
+    return False
